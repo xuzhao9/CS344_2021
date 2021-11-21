@@ -48,6 +48,13 @@ __global__ void rgba_to_greyscale(const uchar4 *const rgbaImage,
   // First create a mapping from the 2D block and grid locations
   // to an absolute 2D location in the image, then use that to
   // calculate a 1D offset
+  int offset = 0;
+  int thread_grid_x = blockIdx.x * blockDim.x + threadIdx.x;
+  int thread_grid_y = blockIdx.y * blockDim.y + threadIdx.y;
+  offset = thread_grid_x + thread_grid_y * gridDim.x * blockDim.x;
+  uchar4 rgba = rgbaImage[offset];
+  float channelSum = .299f * rgba.x + .587f * rgba.y + .114f * rgba.z;
+  greyImage[offset] = channelSum;
 }
 
 void your_rgba_to_greyscale(const uchar4 *const h_rgbaImage,
