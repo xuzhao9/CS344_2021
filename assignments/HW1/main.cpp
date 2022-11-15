@@ -63,6 +63,7 @@ int main(int argc, char **argv) {
   GpuTimer timer;
   timer.Start();
   // call the students' code
+  std::cerr << "Image rows: " << numRows() << ", Image columns: " << numCols() << std::endl;
   your_rgba_to_greyscale(h_rgbaImage, d_rgbaImage, d_greyImage, numRows(),
                          numCols());
   timer.Stop();
