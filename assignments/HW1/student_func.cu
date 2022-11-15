@@ -36,7 +36,6 @@
 __global__ void rgba_to_greyscale(const uchar4 *const rgbaImage,
                                   unsigned char *const greyImage, int numRows,
                                   int numCols) {
-  // TODO
   // Fill in the kernel to convert from color to greyscale
   // the mapping from components of a uchar4 to RGBA is:
   // .x -> R ; .y -> G ; .z -> B ; .w -> A
@@ -49,22 +48,23 @@ __global__ void rgba_to_greyscale(const uchar4 *const rgbaImage,
   // to an absolute 2D location in the image, then use that to
   // calculate a 1D offset
   int offset = 0;
-  int thread_grid_x = blockIdx.x * blockDim.x + threadIdx.x;
-  int thread_grid_y = blockIdx.y * blockDim.y + threadIdx.y;
-  offset = thread_grid_x + thread_grid_y * gridDim.x * blockDim.x;
+  int thread_grid_before = gridDim.y * blockDim.y * blockId.x;
+  int thread_line_before = gridDim.y * blockDim.y * threadId.x;
+  int thread_line_offset = gridDim.y * blockId.y + thread.y;
+  offset = thread_grid_before + thread_line_before + thread_line_offset;
   uchar4 rgba = rgbaImage[offset];
   float channelSum = .299f * rgba.x + .587f * rgba.y + .114f * rgba.z;
-  greyImage[offset] = channelSum;
+  greyImage[offset] = (char)channelSum;
 }
 
 void your_rgba_to_greyscale(const uchar4 *const h_rgbaImage,
                             uchar4 *const d_rgbaImage,
                             unsigned char *const d_greyImage, size_t numRows,
                             size_t numCols) {
-  // You must fill in the correct sizes for the blockSize and gridSize
-  // currently only one block with one thread is being launched
-  const dim3 blockSize(1, 1, 1); // TODO
-  const dim3 gridSize(1, 1, 1);  // TODO
+  // Image size: 313 x 557 pixels
+  // Each block has 1 thread that handles 1 pixel
+  const dim3 blockSize(1, 1, 1);
+  const dim3 gridSize(313, 557, 1);
   rgba_to_greyscale<<<gridSize, blockSize>>>(d_rgbaImage, d_greyImage, numRows,
                                              numCols);
 
