@@ -48,9 +48,9 @@ __global__ void rgba_to_greyscale(const uchar4 *const rgbaImage,
   // to an absolute 2D location in the image, then use that to
   // calculate a 1D offset
   int offset = 0;
-  int thread_grid_before = gridDim.y * blockDim.y * blockId.x;
-  int thread_line_before = gridDim.y * blockDim.y * threadId.x;
-  int thread_line_offset = gridDim.y * blockId.y + thread.y;
+  int thread_grid_before = gridDim.y * blockDim.y * blockIdx.x;
+  int thread_line_before = gridDim.y * blockDim.y * threadIdx.x;
+  int thread_line_offset = gridDim.y * blockIdx.y + threadIdx.y;
   offset = thread_grid_before + thread_line_before + thread_line_offset;
   uchar4 rgba = rgbaImage[offset];
   float channelSum = .299f * rgba.x + .587f * rgba.y + .114f * rgba.z;
